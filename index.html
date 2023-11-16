@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symbol Transfer</title>
+    <link rel="stylesheet" href="styles.css"> <!-- CSSファイルを読み込む -->
+    <script src="https://xembook.github.io/nem2-browserify/symbol-sdk-2.0.4.js"></script>
+    <script language="JavaScript">
+        NODE = 'https://ik1-432-48199.vs.sakura.ne.jp:3001';
+        sym = require("/node_modules/symbol-sdk");
+        repo = new sym.RepositoryFactoryHttp(NODE);
+        txRepo = repo.createTransactionRepository();
+        (async () => {
+            networkType = await repo.getNetworkType().toPromise();
+            generationHash = await repo.getGenerationHash().toPromise();
+            epochAdjustment = await repo.getEpochAdjustment().toPromise();
+        })();
+
+        const sender = 'ここに秘密鍵を入力してください　※秘密鍵を他の人に見られる恐れがありますので、少額及び捨てアカウントでのご利用をお勧めします、なおこちらでは秘密鍵の取扱いによるトラブル等の責任は一切取りかねますので、そちらをご理解の上でのご利用をお願いします。';
+        // 送信数量に応じたメッセージを生成する関数
+        // 各項目のメッセージリストja
+// 各範囲のメッセージリスト
+// 各範囲のメッセージリスト
+// 各範囲のメッセージリスト
+const messagesByRange = {
+    '0-9': [
+        '今ここで諦めるな！成功への第一歩はここからだ。このトレーニングはまずはスタート地点。これからが本番だ。君は未来のヒーローだ！',
+        '苦しい時こそ、本当の力を発揮するチャンスだ。筋肉は辛さから生まれる。君の決意が君を次のレベルに押し上げる。諦めることは許されない。',
+        '逆境を乗り越えたとき、本当の成長が始まる。このトレーニングは君の内なる強さを呼び覚ます。君は今、勝者への道を歩いている。',
+        'トレーニングは戦いだ。そして、君は戦士だ。1回のトレーニングが君を強くし、次の挑戦に備える。進め、勝利は君の手の中にある。',
+        '一歩一歩、未来の勝者への階段を登っていけ！このトレーニングは君の物語の第一章。未来の君は今日の努力に感謝するだろう。',
+        'この瞬間こそ、君が勇者であることを示す瞬間だ！このトレーニングは君の英雄の旅の始まり。君の名前は永遠に記憶されるだろう！',
+        '苦しいときこそ、君の内なる炎が燃え盛る時だ！筋肉は苦難の中で鍛えられ、君はその炎で灼熱の成功へ向かう。諦めることは絶対にない！',
+        '逆境を乗り越えると、真の英雄が誕生する。このトレーニングは君の魂に火を灯し、君は勝者として輝く。勝利の道を突き進め！',
+        'トレーニングは戦場だ。君は勇者だ。1回のトレーニングが君を鋼のように鍛え、次の試練に備える。前進せよ、勝利は必ず手に入る！',
+        'トレーニングの炎は君の内に燃え盛る！君は炎の騎士であり、このトレーニングは君の炎の冒険の序章だ。'
+    ],
+    '10-49': [
+        '限界を突破せよ！君にはその力がある！10回を超えるトレーニングは、君の本当の可能性に近づく鍵だ。君はすでに進化し続けている。',
+        '今の苦労は明日の勝利への投資だ。10回以上のトレーニングは、君の未来の成功への投資だ。君の決意が道を開く。',
+        '強くなりたければ、諦めることは許されない。成功への道は困難だが、君はその挑戦に立ち向かう勇気を持っている。続けろ！',
+        '君の決意が未来の英雄を育てる。10回以上のトレーニングは君が限界を超える手助けとなる。継続は成功への秘訣だ！',
+        '成功には努力が必要だ。諦めない君が、いつかその成功の頂点に立つ。君のトレーニングは未来の物語の一部だ。',
+        '今ここからが本当の興奮の時だ！10回以上のトレーニングは君の冒険の新たな章の始まりだ。新たな挑戦に立ち向かおう！',
+        '君のトレーニングは未来の宝物だ。10回以上のトレーニングは君の宝物庫を満たしている。次の目的地は栄光だ！',
+        'トレーニングは君の舞台裏の物語だ。10回以上のトレーニングは新たな冒険の扉を開けている。未知の領域に進もう！',
+        '君のトレーニングは新たな道を切り開いている。10回以上のトレーニングは君の成功への旅路に光を当てている。諦めずに前進しよう！',
+        'トレーニングは君の成長の記録だ。10回以上のトレーニングは君の成長の物語のページを埋めている。未来の成功に向けて進もう！'
+    ],
+    '50-99': [
+        'すごいぞ！君の筋肉は勝利の証だ。50回以上のトレーニングは、君が本当の勝者であることを示す。君は目標に向かって全力で突き進んでいる。',
+        '毎日のトレーニングが君を不屈の力に変える。50回以上のトレーニングは、君の内なる強さを開花させる。これからも前進しよう。',
+        '成功の鍵は君の手の中にある。受け取れ！50回以上のトレーニングは、君が夢を実現させるための道だ。諦めずに頑張れ！',
+        '強さは君がどれだけ続けられるかにかかっている。50回以上のトレーニングは、君の持久力を高め、さらなる挑戦に備える。逆境も君を成長させるチャンスだ。',
+        '逆境にも負けずに前進し続けよう！50回以上のトレーニングは、君が目標に向かって不屈の意志を持つことを示す。成功はすぐそこにある！',
+        'これからが本当の戦いだ！50回以上のトレーニングは君の挑戦の幕開けだ。君の成功は確実に近づいている！',
+        '毎日のトレーニングが君を不撓不屈の巨人に変えている。50回以上のトレーニングは君の内なる強さを開花させる。これからも前進しよう！',
+        '成功の鍵は君の手にある。受け取れ！50回以上のトレーニングは、君が夢を実現するための鍵だ。諦めずに突き進め！',
+        '強さは君がどれだけ続けられるかにかかっている。50回以上のトレーニングは、君の持久力を高め、さらなる挑戦に備える。逆境も君を成長させるチャンスだ！',
+        '逆境にも負けずに前進し続けましょう！50回以上のトレーニングは、君が目標に向かって不屈の意志を持つことを示す。成功はすぐそこにある！',
+        '50回以上のトレーニングは君の筋肉を無敵の戦士に変えている。次の戦場に向かおう！',
+        'トレーニングは君の歴史の一部だ。50回以上のトレーニングは君の歴史書を埋めている。次の章は栄光の勝利だ！',
+        '君のトレーニングは未来の宝物庫だ。50回以上のトレーニングは君の宝物庫を満たしている。未来の宝物は成功だ！',
+        'トレーニングの舞台裏では、筋肉が伝説の英雄を演じている。50回以上のトレーニングは君の伝説の物語の予告だ。',
+        'トレーニングは君の秘密の魔法の源だ。50回以上のトレーニングは君の魔法の力を開花させている。成功の魔法を使おう！'
+    ],
+    '100+': [
+        '君は伝説だ！100回以上のトレーニングはまさに偉業だ。君の努力と決意は無限の可能性を開く。未来は君のものだ。',
+        '成功への扉は開かれている。君はその扉を押し開ける覚悟があるか？100回以上のトレーニングは、君の成功への切符だ。君はすでに勝者の列に名を連ねている。',
+        '強さとは、諦めずに立ち向かう力だ。君はそれを持っている。100回以上のトレーニングは、君の不撓不屈の精神を証明する。君は成功への道を歩いている。',
+        '君のトレーニングは世界を変える力を秘めている。100回以上のトレーニングは、君が他の人々に勇気とインスピレーションを与えることを示す。継続して前進しよう！',
+        '未来は君の手に委ねられている。力強く前進しよう！100回以上のトレーニングは、君が成功への旅を楽しむことを意味する。君は自分の可能性を信じ、それを実現させている。',
+        '100回以上のトレーニングは君の筋肉を神話の神々に変えている。新たな神話を築こう！',
+        'トレーニングは君の歴史の一部だ。100回以上のトレーニングは君の歴史書を埋めている。次の章は栄光の伝説だ！',
+        '君のトレーニングは未来の宝物庫だ。100回以上のトレーニングは君の宝物庫を満たしている。未来の宝物は成功だ！',
+        'トレーニングの舞台裏では、筋肉が伝説の英雄を演じている。100回以上のトレーニングは君の伝説の物語の予告だ。',
+        'トレーニングは君の秘密の魔法の源だ。100回以上のトレーニングは君の魔法の力を開花させている。成功の魔法を使おう！',
+        '100回以上のトレーニングは君の成功への道標だ。これからも前進して、成功への道を切り拓こう！',
+        '君のトレーニングは未来の英雄譚だ。100回以上のトレーニングは君の英雄譚の物語を書き換えている。続けて成功に向かおう！'
+        ],
+    default: [
+        'がんばりましょう！トレーニングは一歩ずつの積み重ねです。',
+        '自分自身に誇りを持ち、目標に向かって前進しましょう。',
+        'トレーニングは健康と自己成長の旅です。楽しんで進んでいきましょう。',
+        '自分自身を信じて、限界に挑戦しましょう。',
+        '継続こそが成功への秘訣です。諦めずに頑張りましょう！',
+    ],
+};
+
+
+
+// ランダムにメッセージを選ぶ関数
+function getRandomMessage(amount) {
+    if (amount >= 100) {
+        return getRandomMessageByRange('100+');
+    } else if (amount >= 50) {
+        return getRandomMessageByRange('50-99');
+    } else if (amount >= 10) {
+        return getRandomMessageByRange('10-49');
+    } else {
+        return getRandomMessageByRange('0-9');
+    }
+}
+
+// 範囲ごとにランダムにメッセージを選ぶ関数
+function getRandomMessageByRange(range) {
+    const messageList = messagesByRange[range] || messagesByRange.default;
+    const randomIndex = Math.floor(Math.random() * messageList.length);
+    return sym.PlainMessage.create(messageList[randomIndex]);
+}
+
+// createMessage関数を変更
+function createMessage(amount) {
+    return getRandomMessage(amount);
+}
+
+        // トランザクションを生成し、署名して送信する関数
+        function createAndSendTransaction() {
+            const recipientAddress = sym.Address.createFromRawAddress(document.getElementById('recipientAddress').value);
+            const amount = parseInt(document.getElementById('amount').value);
+
+            // アカウントを生成し、トランザクションを作成
+            const senderAccount = sym.Account.createFromPrivateKey(sender, sym.NetworkType.MAIN_NET);
+            const transferTransaction = sym.TransferTransaction.create(
+                sym.Deadline.create(epochAdjustment, 6),
+                recipientAddress, // トークンの宛先アドレス
+                [new sym.Mosaic(new sym.MosaicId('mosaicIDを入力してください'), sym.UInt64.fromUint(amount))], // 送信するモザイク
+                createMessage(amount), // 送信数量に応じたメッセージを生成
+                sym.NetworkType.MAIN_NET
+            ).setMaxFee(100);
+
+            // トランザクションに署名
+            const signedTx = senderAccount.sign(transferTransaction, generationHash);
+
+            // ノードへ署名されたトランザクションをアナウンス
+            new sym.TransactionHttp(NODE)
+                .announce(signedTx)
+                .subscribe(
+                    (x) => {
+                        console.log(x);
+                        alert("トランザクションが正常に送信されました！ウォレットでtokenとXYMZAPからのmessageの確認をお願いします！");
+                        // トランザクションが成功したら、トークン数量を表示
+                        getAndDisplayTokenBalance(document.getElementById('recipientAddress').value);
+                    },
+                    (err) => {
+                        console.error(err);
+                        alert("トランザクションの送信中にエラーが発生しました。");
+                    }
+                );
+        }
+
+        // トークンの数量を取得し、HTMLに表示する関数
+        async function getAndDisplayTokenBalance(address) {
+            const tokenId = 'mosaicIDを入力してください';
+
+            try {
+                const accountHttp = repo.createAccountRepository();
+                const accountAddress = sym.Address.createFromRawAddress(address);
+                const accountInfo = await accountHttp.getAccountInfo(accountAddress).toPromise();
+                const tokenBalance = accountInfo.mosaics.find(mosaic => mosaic.id.toHex() === tokenId);
+
+                // トークン数量を表示する要素に設定
+                const tokenBalanceElement = document.getElementById('tokenBalance');
+                if (tokenBalance) {
+                    tokenBalanceElement.textContent = `保有トークン数量: ${tokenBalance.amount.compact()} KINNIKU-TOKEN`;
+                } else {
+                    tokenBalanceElement.textContent = `トークンを保有していません`;
+                }
+            } catch (error) {
+                console.error(error);
+                alert("トークン数量の取得中にエラーが発生しました。");
+            }
+        }
+    </script>
+    <script>
+      // トークンの数量を取得し、枚数に応じて背景をHTMLに表示する関数
+async function getAndDisplayTokenBalance(address) {
+    const tokenId = 'mosaicIDを入力してください';
+
+    try {
+        const accountHttp = repo.createAccountRepository();
+        const accountAddress = sym.Address.createFromRawAddress(address);
+        const accountInfo = await accountHttp.getAccountInfo(accountAddress).toPromise();
+        const tokenBalance = accountInfo.mosaics.find(mosaic => mosaic.id.toHex() === tokenId);
+
+        // トークン数量を表示する要素に設定
+        const tokenBalanceElement = document.getElementById('tokenBalance');
+        if (tokenBalance) {
+            tokenBalanceElement.textContent = `保有トークン数量: ${tokenBalance.amount.compact()} KINNIKU-TOKEN`;
+
+            // トークン保有数に応じた背景スタイルを追加
+            const bodyElement = document.body;
+            bodyElement.classList.remove('background-00', 'background-0', 'background-1', 'background-2', 'background-3', 'background-4', 'background-5', 'background-6', 'background-7', 'background-8', 'background-9'); // 既存のクラスを削除
+            const tokenCount = tokenBalance.amount.compact();
+            
+                    
+                    if (tokenCount >= 1 && tokenCount <= 100) {
+            bodyElement.classList.add('background-00');
+                } else if (tokenCount >= 101 && tokenCount <= 200) {
+            bodyElement.classList.add('background-0');
+                }else if (tokenCount >= 201 && tokenCount <= 300) {
+            bodyElement.classList.add('background-1');
+                } else if (tokenCount >= 301 && tokenCount <= 400) {
+            bodyElement.classList.add('background-2');
+                } else if (tokenCount >= 401 && tokenCount <= 500) {
+            bodyElement.classList.add('background-3');
+                } else if (tokenCount >= 501 && tokenCount <= 1000) {
+            bodyElement.classList.add('background-4');
+                 } else if (tokenCount >= 1001 && tokenCount <= 1500) {
+            bodyElement.classList.add('background-5');
+                 } else if (tokenCount >= 1501 && tokenCount <= 2000) {
+            bodyElement.classList.add('background-6');
+                 } else if (tokenCount >= 2001 && tokenCount <= 2500) {
+            bodyElement.classList.add('background-7');
+                 } else if (tokenCount >= 2501 && tokenCount <= 3000) {
+            bodyElement.classList.add('background-8');
+                 } else if (tokenCount >= 3001 && tokenCount <= 30000000000000) {
+            bodyElement.classList.add('background-9');
+            }
+
+             // 他のトークン保有数に応じた条件も同様に追加できます
+        } else {
+            tokenBalanceElement.textContent = `トークンを保有していません`;
+        }
+    } catch (error) {
+        console.error(error);
+        // alert("トークン数量の取得中にエラーが発生しました。");
+    }
+}
+  
+  // ページの読み込みが完了した際に背景を設定する
+window.onload = function () {
+    // ページ読み込み時に背景を更新
+    updateBackground();
+
+    // 受信者アドレスと筋トレ回数の入力フィールドが変更された際にも背景を更新
+    const recipientAddressInput = document.getElementById('recipientAddress');
+    const amountInput = document.getElementById('amount');
+
+    recipientAddressInput.addEventListener('input', updateBackground);
+    amountInput.addEventListener('input', updateBackground);
+}
+
+// トークンの数量に応じて背景を設定する関数
+function updateBackground() {
+    const recipientAddress = document.getElementById('recipientAddress').value;
+    getAndDisplayTokenBalance(recipientAddress);
+}
+
+
+    </script>
+</head>
+<body>
+    <header>
+        
+   <button style="background-color:transparent; border-color:blue; color:white" id="toggleTableOfContents"><img src="XYM.png" alt="Fitness Logo"></button>
+    <ul id="tableOfContents" style="display: none;">
+        <li><a style="font-size: 10px;background-color:transparent; border-color:blue; color:white" href="https://symbol-community.com/ja/docs/1">ウォレット作成</a></li>
+        <li><a style="font-size: 12px;background-color:transparent; border-color:blue; color:white" href="https://ishidad2.github.io/ShareZAP/?address=">ShareZAP</a></li>
+        <!--<li><a href="#section2">セクション2</a></li>-->
+        <!--<li><a href="#section3">セクション3</a></li>-->
+    </ul>
+      
+   
+    <!-- ここに他の header コンテンツを追加できます -->
+<script>
+    // 目次を表示/非表示に切り替える関数
+    function toggleTableOfContents() {
+        const tableOfContents = document.getElementById('tableOfContents');
+        if (tableOfContents.style.display === 'none') {
+            tableOfContents.style.display = 'block';
+        } else {
+            tableOfContents.style.display = 'none';
+        }
+    }
+
+    // クリックイベントリスナーを設定
+    const toggleButton = document.getElementById('toggleTableOfContents');
+    toggleButton.addEventListener('click', toggleTableOfContents);
+</script>
+
+
+</header>
+
+  <div class="container">   
+  
+           
+            <p id="siteDescription"style="font-weight: bold;">こちらのサイトは筋トレを促す特別な場所です。<br>あなたのSYMBOLアドレスと筋トレ回数を入力し、<br>「筋トレ報酬獲得」ボタンを押すとトランザクションが発生し、<br>筋トレ回数に応じたメッセージとKINNIKU-TOKENが贈られます。</p>
+        
+        
+        <form id="transferForm">
+            <label for="recipientAddress">受信者のSYMBOLアドレス</label>
+            <input type="text" id="recipientAddress" name="recipientAddress" required><br><br>
+            
+            <label for="amount">筋トレ回数:</label>
+            <input type="number" id="amount" name="amount" required><br><br>
+            
+            <!-- ボタンを追加してクリックでトランザクションを送信 -->
+            <button type="button" onclick="createAndSendTransaction()">筋トレ報酬を獲得</button>
+        </form>
+
+        <!-- トークン数量を表示する要素 -->
+        <p id="tokenBalance">保有トークン数量: 0 KINNIKU-TOKEN</p>
+    
+    <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+  <a href="https://px.a8.net/svt/ejp?a8mat=3TJE9H+2RFESY+5636+60WN5" rel="nofollow">
+    <img border="0" width="234" height="60" alt="" src="https://www22.a8.net/svt/bgt?aid=231012341167&wid=001&eno=01&mid=s00000024117001012000&mc=1">
+  </a>
+  
+  <div style="display: flex; flex-direction: row; align-items: center; text-align: center;">
+  <a href="https://px.a8.net/svt/ejp?a8mat=3TJE9H+6F07HU+3D3Q+TUO9T" rel="nofollow">
+    <img border="0" width="100" height="60" alt="" src="https://www22.a8.net/svt/bgt?aid=231012341388&wid=001&eno=01&mid=s00000015695005014000&mc=1">
+  </a>
+  
+  <a href="https://px.a8.net/svt/ejp?a8mat=3TJE9H+8ZVTV6+3D3Q+601S1" rel="nofollow">
+    <img border="0" width="120" height="60" alt="" src="https://www24.a8.net/svt/bgt?aid=231012341544&wid=001&eno=01&mid=s00000015695001008000&mc=1">
+  </a>
+</div>
+
+</div>
+
+<style>
+  @media (max-width: 480px) {
+    div {
+      flex-direction: column;
+    }
+  }
+</style>
+
+
+</body>
+</html>
